@@ -1,0 +1,120 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'C:\\Users\\trongle\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'publish' ]
+2 info using npm@3.10.5
+3 info using node@v7.5.0
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   escapedName: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: 'D:\\qtest\\project_codes\\log2qtest',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory C:\Users\trongle\AppData\Roaming\npm-cache\log2qtest\0.0.2\package.tgz not in flight; packing
+9 verbose correctMkdir C:\Users\trongle\AppData\Roaming\npm-cache correctMkdir not in flight; initializing
+10 info lifecycle log2qtest@0.0.2~prepublish: log2qtest@0.0.2
+11 silly lifecycle log2qtest@0.0.2~prepublish: no script for prepublish, continuing
+12 verbose tar pack [ 'C:\\Users\\trongle\\AppData\\Roaming\\npm-cache\\log2qtest\\0.0.2\\package.tgz',
+12 verbose tar pack   'D:\\qtest\\project_codes\\log2qtest' ]
+13 verbose tarball C:\Users\trongle\AppData\Roaming\npm-cache\log2qtest\0.0.2\package.tgz
+14 verbose folder D:\qtest\project_codes\log2qtest
+15 verbose addLocalTarball adding from inside cache C:\Users\trongle\AppData\Roaming\npm-cache\log2qtest\0.0.2\package.tgz
+16 verbose correctMkdir C:\Users\trongle\AppData\Roaming\npm-cache correctMkdir not in flight; initializing
+17 silly cache afterAdd log2qtest@0.0.2
+18 verbose afterAdd C:\Users\trongle\AppData\Roaming\npm-cache\log2qtest\0.0.2\package\package.json not in flight; writing
+19 verbose correctMkdir C:\Users\trongle\AppData\Roaming\npm-cache correctMkdir not in flight; initializing
+20 verbose afterAdd C:\Users\trongle\AppData\Roaming\npm-cache\log2qtest\0.0.2\package\package.json written
+21 silly publish { name: 'log2qtest',
+21 silly publish   version: '0.0.2',
+21 silly publish   description: 'Submit automation logs (JUnit) to qTest qtestnet.com',
+21 silly publish   main: 'index.js',
+21 silly publish   scripts:
+21 silly publish    { test: 'echo "Error: no test specified" && exit 1',
+21 silly publish      build: 'rm -rf bin && babel -d bin ./src',
+21 silly publish      watch: 'rm -rf bin && babel -w --out-dir bin ./src' },
+21 silly publish   bin: { log2qtest: './bin/index.js' },
+21 silly publish   keywords: [ 'automation log', 'qTest', 'junit' ],
+21 silly publish   author:
+21 silly publish    { name: 'Trong Le',
+21 silly publish      email: 'vantrong2210@gmail.com',
+21 silly publish      url: 'https://github.com/gunivan' },
+21 silly publish   license: 'MIT',
+21 silly publish   dependencies:
+21 silly publish    { chalk: '^1.1.1',
+21 silly publish      commander: '^2.9.0',
+21 silly publish      lodash: '^4.17.4',
+21 silly publish      'node-native-zip': '^1.1.0',
+21 silly publish      'node-rest-client': '^3.0.3',
+21 silly publish      progress: '^1.1.8',
+21 silly publish      xml2js: '^0.4.17' },
+21 silly publish   devDependencies: { 'babel-cli': '^6.1.2', 'babel-preset-es2015': '^6.1.2' },
+21 silly publish   gitHead: 'df215bf76cb98dcefdcb49dda9a7b7a03c6a7337',
+21 silly publish   readme: '# log2qtest\r\n\r\nThis is CLI app that allow parse JUnit xml file then submit to qTest via rest API\r\n\r\n# Config file: config.json\r\n{\r\n  "host": "<qTest url>",\r\n  "username": "<qTest username>",\r\n  "password": "<qTest password>",\r\n  "project": <qTest project>,\r\n  "suite": <qTest test suite>,\r\n  "module": <qTest parent module>,\r\n  "file": "<junit xml file>",\r\n  "methodAsTestCase": <true|false>, //if true then each junit method as a qTest testcase, default is false\r\n  "status": {/*mapping pass and fail status*/\r\n    "pass": "PASSED",\r\n    "fail": "FAILED"\r\n  },\r\n  "exe_date": null //must be formatted as yyyy-MM-dd\r\n}\r\n',
+21 silly publish   readmeFilename: 'README.md',
+21 silly publish   _id: 'log2qtest@0.0.2',
+21 silly publish   _shasum: '54c1d0af877ca7d8e31af048e24ab4eb3bc02d6b',
+21 silly publish   _from: '.' }
+22 verbose getPublishConfig undefined
+23 silly mapToRegistry name log2qtest
+24 silly mapToRegistry using default registry
+25 silly mapToRegistry registry http://registry.npmjs.org/
+26 silly mapToRegistry data Result {
+26 silly mapToRegistry   raw: 'log2qtest',
+26 silly mapToRegistry   scope: null,
+26 silly mapToRegistry   escapedName: 'log2qtest',
+26 silly mapToRegistry   name: 'log2qtest',
+26 silly mapToRegistry   rawSpec: '',
+26 silly mapToRegistry   spec: 'latest',
+26 silly mapToRegistry   type: 'tag' }
+27 silly mapToRegistry uri http://registry.npmjs.org/log2qtest
+28 verbose publish registryBase http://registry.npmjs.org/
+29 silly publish uploading C:\Users\trongle\AppData\Roaming\npm-cache\log2qtest\0.0.2\package.tgz
+30 verbose request uri http://registry.npmjs.org/log2qtest
+31 verbose request sending authorization for write operation
+32 info attempt registry request try #1 at 2:45:19 AM
+33 verbose request using bearer token for auth
+34 verbose request id 8d57bbe5f71e947a
+35 http request PUT http://registry.npmjs.org/log2qtest
+36 http 403 http://registry.npmjs.org/log2qtest
+37 verbose headers { 'content-type': 'application/json',
+37 verbose headers   'cache-control': 'max-age=300',
+37 verbose headers   'content-length': '128',
+37 verbose headers   'accept-ranges': 'bytes',
+37 verbose headers   date: 'Sun, 12 Mar 2017 19:45:21 GMT',
+37 verbose headers   via: '1.1 varnish',
+37 verbose headers   connection: 'keep-alive',
+37 verbose headers   'x-served-by': 'cache-hkg6825-HKG',
+37 verbose headers   'x-cache': 'MISS',
+37 verbose headers   'x-cache-hits': '0',
+37 verbose headers   'x-timer': 'S1489347920.668877,VS0,VE735',
+37 verbose headers   vary: 'Accept-Encoding' }
+38 verbose request invalidating C:\Users\trongle\AppData\Roaming\npm-cache\registry.npmjs.org\log2qtest on PUT
+39 error publish Failed PUT 403
+40 verbose stack Error: "You cannot publish over the previously published version 0.0.2. Try bumping the version to 1.0.0" : log2qtest
+40 verbose stack     at makeError (C:\Users\trongle\AppData\Roaming\npm\node_modules\npm\node_modules\npm-registry-client\lib\request.js:264:12)
+40 verbose stack     at CachingRegistryClient.<anonymous> (C:\Users\trongle\AppData\Roaming\npm\node_modules\npm\node_modules\npm-registry-client\lib\request.js:252:14)
+40 verbose stack     at Request._callback (C:\Users\trongle\AppData\Roaming\npm\node_modules\npm\node_modules\npm-registry-client\lib\request.js:172:14)
+40 verbose stack     at Request.self.callback (C:\Users\trongle\AppData\Roaming\npm\node_modules\npm\node_modules\request\request.js:200:22)
+40 verbose stack     at emitTwo (events.js:106:13)
+40 verbose stack     at Request.emit (events.js:192:7)
+40 verbose stack     at Request.<anonymous> (C:\Users\trongle\AppData\Roaming\npm\node_modules\npm\node_modules\request\request.js:1067:10)
+40 verbose stack     at emitOne (events.js:101:20)
+40 verbose stack     at Request.emit (events.js:189:7)
+40 verbose stack     at IncomingMessage.<anonymous> (C:\Users\trongle\AppData\Roaming\npm\node_modules\npm\node_modules\request\request.js:988:12)
+41 verbose statusCode 403
+42 verbose pkgid log2qtest
+43 verbose cwd D:\qtest\project_codes\log2qtest
+44 error Windows_NT 10.0.10240
+45 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Users\\trongle\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npm-cli.js" "publish"
+46 error node v7.5.0
+47 error npm  v3.10.5
+48 error code E403
+49 error "You cannot publish over the previously published version 0.0.2. Try bumping the version to 1.0.0" : log2qtest
+50 error If you need help, you may report this error at:
+50 error     <https://github.com/npm/npm/issues>
+51 verbose exit [ 1, true ]
