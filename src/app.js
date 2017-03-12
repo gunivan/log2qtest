@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import chalk from 'chalk';
 import ProgressBar from 'progress';
 import { Parser } from './junit';
@@ -11,7 +12,7 @@ export class App {
   loadConfig(program) {
     let config = {};
     try {
-      config = require('../config.json');
+      config = require(path.resolve('config.json'));
       console.log('Found config.json at current directory.');
     } catch (e) {
       console.log('Not found config.json at current directory, use default console params.');
