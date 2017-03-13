@@ -104,7 +104,7 @@ export class Submitter {
    * @param {*} data @see parser.parse
    */
   submit(config, suites) {
-    console.log('Suite summry', suites.suite.summary);
+    console.log('Suite summary', suites.suite.summary);
     let url = `${config.host}/api/v3.1/projects/${config.project}/test-runs/0/auto-test-logs?type=automation`;
     let testLogs = this.buildTestLogs(config, suites.suite);
     console.log(chalk.cyan(`Test logs ${testLogs.length}`));
@@ -149,7 +149,7 @@ export class Submitter {
     if (config.methodAsTestCase) {
       return _(suite.tests)
         .map((test) => {
-          return _(_this.buildTestLog(config, [test], test.classname))
+          return _(_this.buildTestLog(config, [test], test.name))
             .tap(testLog => { testLog['status'] = config.status[test.status] })
             .value();
         }).value();

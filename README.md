@@ -20,6 +20,8 @@ This is CLI app that allow parse JUnit xml file then submit to qTest via rest AP
 }
 
 # Usages
--c: to generate config file
--p: '<xml file>': to parse from xml file
+-C: to generate config file, then you should see and update config.json at current working directory
+-c: to parse from xml file
+-c '<xml file>': to parse specific xml file
 -s: to submit logs to qTest
+-M: each method as test case

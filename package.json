@@ -1,6 +1,6 @@
 {
   "name": "log2qtest",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Submit automation logs (JUnit) to qTest qtestnet.com",
   "main": "index.js",
   "scripts": {
@@ -20,6 +20,10 @@
     "name": "Trong Le",
     "email": "vantrong2210@gmail.com",
     "url": "https://github.com/gunivan"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:gunivan/log2qtest.git"
   },
   "license": "MIT",
   "dependencies": {

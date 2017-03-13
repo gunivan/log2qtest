@@ -148,7 +148,7 @@ var Submitter = exports.Submitter = function () {
   }, {
     key: 'submit',
     value: function submit(config, suites) {
-      console.log('Suite summry', suites.suite.summary);
+      console.log('Suite summary', suites.suite.summary);
       var url = config.host + '/api/v3.1/projects/' + config.project + '/test-runs/0/auto-test-logs?type=automation';
       var testLogs = this.buildTestLogs(config, suites.suite);
       console.log(_chalk2.default.cyan('Test logs ' + testLogs.length));
@@ -195,7 +195,7 @@ var Submitter = exports.Submitter = function () {
       var _this = this;
       if (config.methodAsTestCase) {
         return (0, _lodash2.default)(suite.tests).map(function (test) {
-          return (0, _lodash2.default)(_this.buildTestLog(config, [test], test.classname)).tap(function (testLog) {
+          return (0, _lodash2.default)(_this.buildTestLog(config, [test], test.name)).tap(function (testLog) {
             testLog['status'] = config.status[test.status];
           }).value();
         }).value();

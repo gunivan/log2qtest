@@ -36,7 +36,7 @@ export class App {
       project: program.project || config.project,
       suite: program.suite || config.suite,
       module: program.module || config.module,
-      dir: program.parse || config.file,
+      dir: program.file || config.file,
       methodAsTestCase: program.methodAsTestCase || config.methodAsTestCase,
       exeDate: program.exeDate || config.exe_date,
       startDate: new Date().toISOString()

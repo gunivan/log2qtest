@@ -43,7 +43,7 @@ var App = exports.App = function () {
     key: 'createConfig',
     value: function createConfig() {
       try {
-        var defaultConfig = require(_path2.default.resolve('default.config.json'));
+        var defaultConfig = require(_path2.default.resolve(__dirname, './default.config.json'));
         var sampleConfigFile = _path2.default.resolve(process.cwd(), 'config.json');
         _fs2.default.writeFileSync(sampleConfigFile, JSON.stringify(defaultConfig, null, 2));
         console.log(_chalk2.default.cyan('Created config.json at current directory.'));
@@ -70,7 +70,7 @@ var App = exports.App = function () {
         project: program.project || config.project,
         suite: program.suite || config.suite,
         module: program.module || config.module,
-        dir: program.parse || config.file,
+        dir: program.file || config.file,
         methodAsTestCase: program.methodAsTestCase || config.methodAsTestCase,
         exeDate: program.exeDate || config.exe_date,
         startDate: new Date().toISOString()
