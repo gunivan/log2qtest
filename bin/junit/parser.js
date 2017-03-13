@@ -63,10 +63,10 @@ var Parser = exports.Parser = function () {
       var xml = _fs2.default.readFileSync(file).toString();
       console.log('Read text from file [' + file + '], has text: ' + (xml != null));
       return this.parseFromXml(xml).then(function (res) {
+        console.log('Save objects to file [' + _constants2.default.OUT_FILE + ']');
         if (!_fs2.default.existsSync(_constants2.default.TMP_DIR)) {
           _fs2.default.mkdirSync(_constants2.default.TMP_DIR);
         }
-        console.log('Save objects to file [' + _constants2.default.OUT_FILE + ']');
         _fs2.default.writeFile(_constants2.default.OUT_FILE, JSON.stringify(res), function (status) {
           console.log('Done save to file [' + _constants2.default.OUT_FILE + ']');
         });

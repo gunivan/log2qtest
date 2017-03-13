@@ -45,17 +45,18 @@ export class App {
     return config;
   }
   parseThenSubmit(config, parser) {
-    let bar = new ProgressBar('Parse and submit to qTest [:bar] :percent :etas', {
+    let bar = new ProgressBar('Parse and submit to qTest [:bar] :percent :etas \n', {
       complete: '=',
       incomplete: ' ',
       width: 20,
       total: 2
     });
+
     parser.parse(config).then(data => {
+      console.log(chalk.blue(`  Done parse JUnit xml file.`));
       //set end time
       config.endDate = new Date(new Date(config.startDate).getTime() + (data.suite.time * 1000)).toISOString();
       bar.tick();
-      console.log(chalk.blue('  Parse done'));
 
       let submitter = new Submitter();
 
@@ -63,7 +64,7 @@ export class App {
         config.token = token;
         console.log('Token:', token);
         submitter.submit(config, data).then(res => {
-          console.log('Submit success', res);
+          console.log(`Submit success`, res);
           bar.tick();
           submitter.waitTaskDone(config, res.id, res.status);
         }).catch(e => {

@@ -33,10 +33,10 @@ export class Parser {
     console.log(`Read text from file [${file}], has text: ${xml != null}`);
     return this.parseFromXml(xml)
       .then(res => {
+        console.log(`Save objects to file [${Constants.OUT_FILE}]`);
         if (!fs.existsSync(Constants.TMP_DIR)) {
           fs.mkdirSync(Constants.TMP_DIR);
         }
-        console.log(`Save objects to file [${Constants.OUT_FILE}]`);
         fs.writeFile(Constants.OUT_FILE, JSON.stringify(res), (status) => {
           console.log(`Done save to file [${Constants.OUT_FILE}]`);
         });

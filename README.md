@@ -3,6 +3,7 @@
 This is CLI app that allow parse JUnit xml file then submit to qTest via rest API
 
 # Config file: config.json
+```
 {
   "host": "<qTest url>",
   "username": "<qTest username>",
@@ -18,10 +19,10 @@ This is CLI app that allow parse JUnit xml file then submit to qTest via rest AP
   },
   "exe_date": null //must be formatted as yyyy-MM-dd
 }
-
+```
 # Usages
--C: to generate config file, then you should see and update config.json at current working directory
--c: to parse from xml file
--c '<xml file>': to parse specific xml file
--s: to submit logs to qTest
--M: each method as test case
+- C: to generate config file, then you should see and update config.json at current working directory
+- c: to parse from xml file
+- c "\<xml file\>": to parse specific xml file
+- s: to submit logs to qTest
+- M: each method as test case

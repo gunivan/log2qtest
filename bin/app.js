@@ -81,17 +81,18 @@ var App = exports.App = function () {
   }, {
     key: 'parseThenSubmit',
     value: function parseThenSubmit(config, parser) {
-      var bar = new _progress2.default('Parse and submit to qTest [:bar] :percent :etas', {
+      var bar = new _progress2.default('Parse and submit to qTest [:bar] :percent :etas \n', {
         complete: '=',
         incomplete: ' ',
         width: 20,
         total: 2
       });
+
       parser.parse(config).then(function (data) {
+        console.log(_chalk2.default.blue('  Done parse JUnit xml file.'));
         //set end time
         config.endDate = new Date(new Date(config.startDate).getTime() + data.suite.time * 1000).toISOString();
         bar.tick();
-        console.log(_chalk2.default.blue('  Parse done'));
 
         var submitter = new _qtest.Submitter();
 
