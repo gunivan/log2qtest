@@ -18,3 +18,8 @@ This is CLI app that allow parse JUnit xml file then submit to qTest via rest AP
   },
   "exe_date": null //must be formatted as yyyy-MM-dd
 }
+
+# Usages
+-c: to generate config file
+-p: '<xml file>': to parse from xml file
+-s: to submit logs to qTest

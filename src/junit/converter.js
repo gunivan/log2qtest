@@ -1,5 +1,7 @@
 'use strict';
 import _ from 'lodash';
+import unscape from 'unescape';
+import Constants from '../constants';
 
 function time(raw) {
   return +(+(raw || 0)).toFixed(2);
@@ -17,7 +19,7 @@ function summary(raw) {
 function failure(raw, sysErr, sysOut) {
   return {
     'type': raw.$.type,
-    'message': raw.$.message,
+    'message': unscape(raw.$.message),
     'raw': raw._,
     'error': sysErr,
     'out': sysOut
@@ -35,8 +37,8 @@ function tests(raw) {
       'name': test.$.name,
       'time': time(test.$.time),
       'failure': failure(current, sysErr, sysOut),
-      'status': 'pass'
-    }).tap((result) => { !test.failure && delete result.failure && (result.status = 'fail'); }).value();
+      'status': Constants.STATUS.FAIL
+    }).tap((result) => { !test.failure && delete result.failure && (result.status = Constants.STATUS.PASS); }).value();
   }).value();
 }
 

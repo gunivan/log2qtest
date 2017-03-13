@@ -11,6 +11,10 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
 var _chalk = require('chalk');
 
 var _chalk2 = _interopRequireDefault(_chalk);
@@ -36,14 +40,26 @@ var App = exports.App = function () {
   }
 
   _createClass(App, [{
+    key: 'createConfig',
+    value: function createConfig() {
+      try {
+        var defaultConfig = require(_path2.default.resolve('default.config.json'));
+        var sampleConfigFile = _path2.default.resolve(process.cwd(), 'config.json');
+        _fs2.default.writeFileSync(sampleConfigFile, JSON.stringify(defaultConfig, null, 2));
+        console.log(_chalk2.default.cyan('Created config.json at current directory.'));
+      } catch (e) {
+        console.log(_chalk2.default.yellow('Cannot create file config.json at current directory', e));
+      }
+    }
+  }, {
     key: 'loadConfig',
     value: function loadConfig(program) {
       var config = {};
       try {
-        config = require('../config.json');
-        console.log('Found config.json at current directory.');
+        config = require(_path2.default.resolve(process.cwd(), 'config.json'));
+        console.log(_chalk2.default.cyan('Found config.json at current directory.'));
       } catch (e) {
-        console.log('Not found config.json at current directory, use default console params.');
+        console.log(_chalk2.default.yellow('Not found config.json at current directory, use default console params.', e));
         config = {};
       }
       config = Object.assign(config, {
@@ -54,7 +70,7 @@ var App = exports.App = function () {
         project: program.project || config.project,
         suite: program.suite || config.suite,
         module: program.module || config.module,
-        dir: program.parse || config.dir,
+        dir: program.parse || config.file,
         methodAsTestCase: program.methodAsTestCase || config.methodAsTestCase,
         exeDate: program.exeDate || config.exe_date,
         startDate: new Date().toISOString()
@@ -83,7 +99,7 @@ var App = exports.App = function () {
           config.token = token;
           console.log('Token:', token);
           submitter.submit(config, data).then(function (res) {
-            console.log(_chalk2.default.blue('Submit success', res));
+            console.log('Submit success', res);
             bar.tick();
             submitter.waitTaskDone(config, res.id, res.status);
           }).catch(function (e) {

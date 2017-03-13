@@ -21,6 +21,8 @@ var _chalk = require('chalk');
 
 var _chalk2 = _interopRequireDefault(_chalk);
 
+var _attachment = require('./attachment');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29,6 +31,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 
 var client = new _nodeRestClient.Client();
+var attachment = new _attachment.Attachment();
 
 /**
  * Functional connect to qTest
@@ -111,13 +114,25 @@ var Submitter = exports.Submitter = function () {
       var _this2 = this;
 
       var state = status;
+      var maxRetry = 500;
+      var count = 1;
       var itvId = setInterval(function () {
+        if (count >= maxRetry) {
+          clearInterval(itvId);
+          console.log(_chalk2.default.yellow('Stop get task due tu reach max retry to get task status'));
+        }
         _this2.getTask(config, id).then(function (res) {
           state !== res.state && console.log(_chalk2.default.cyan('Status: ', res.state));
-          state = res.state;
-          if (_constants2.default.TASK_SUCCESS === state) {
+          if (state !== res.state && _constants2.default.TASK_SUCCESS === res.state) {
             clearInterval(itvId);
+            var content = _constants2.default.HEADER.JSON === res.contentType ? JSON.parse(res.content) : {};
+            console.log(_chalk2.default.blue('Test suite link: ' + config.host + '/p/' + config.project + '/portal/project#tab=testexecution&object=2&id=' + content.testSuiteId));
+            console.log(_chalk2.default.cyan('  Total testcases: ' + (content.totalTestCases || 0)));
+            console.log(_chalk2.default.cyan('  Total test runs were created: ' + (content.totalTestRuns || 0)));
+            console.log(_chalk2.default.cyan('  Total test logs were created: ' + (content.totalTestLogs || 0)));
           }
+          state = res.state;
+          count++;
         }).catch(function (e) {
           console.error(_chalk2.default.red('Error while get task ' + id, e));
           clearInterval(itvId);
@@ -133,14 +148,14 @@ var Submitter = exports.Submitter = function () {
   }, {
     key: 'submit',
     value: function submit(config, suites) {
-      console.log('Submit', suites.suite.summary);
+      console.log('Suite summry', suites.suite.summary);
       var url = config.host + '/api/v3.1/projects/' + config.project + '/test-runs/0/auto-test-logs?type=automation';
       var testLogs = this.buildTestLogs(config, suites.suite);
       console.log(_chalk2.default.cyan('Test logs ' + testLogs.length));
       console.log(_chalk2.default.cyan('Submit to qTest...'));
-      var submitData = (0, _lodash2.default)({
+      var submitData = {
         'test_logs': testLogs
-      }).value();
+      };
       config.module && (submitData['parent_module'] = config.module);
       config.suite && (submitData['test_suite'] = config.suite);
       config.exeDate && (submitData['execution_date'] = config.exeDate);
@@ -151,6 +166,11 @@ var Submitter = exports.Submitter = function () {
           'Content-Type': _constants2.default.HEADER.JSON
         }
       };
+      if (config.skipSubmit) {
+        return new Promise(function (resolve, reject) {
+          resolve({});
+        });
+      }
       return new Promise(function (resolve, reject) {
         client.post(url, args, function (data, response) {
           if (data.error) {
@@ -188,7 +208,7 @@ var Submitter = exports.Submitter = function () {
             };
           });
           return (0, _lodash2.default)(_this.buildTestLog(config, tests, classname)).tap(function (testLog) {
-            testLog['status'] = config.status[fail ? 'fail' : 'pass'];
+            testLog['status'] = config.status[fail ? _constants2.default.STATUS.FAIL : _constants2.default.STATUS.PASS];
           }).value();
         }).value();
       }
@@ -209,14 +229,35 @@ var Submitter = exports.Submitter = function () {
         'exe_start_date': config.startDate,
         'exe_end_date': config.endDate
       };
-      // testLog['attachments'] = _(tests)
-      //   .map(test => {
-      //     _({
-      //       'name': '',
-      //       'content_type': 'text/plain',
-      //       'data':''
-      //     }).value()
-      //   });
+      var failures = (0, _lodash2.default)(tests).filter(function (test) {
+        return test.status === _constants2.default.STATUS.FAIL;
+      }).value();
+
+      var attachments = [];
+      if (failures.length < 5) {
+        attachments = (0, _lodash2.default)(failures).map(function (test) {
+          return (0, _lodash2.default)({
+            'name': test.name + '.txt',
+            'content_type': _constants2.default.HEADER.TEXT,
+            'data': attachment.buildText(test.failure.message)
+          }).value();
+        }).value();
+      } else {
+        var zipName = failures[0].classname + '.zip';
+        failures = (0, _lodash2.default)(failures).map(function (test) {
+          return (0, _lodash2.default)({
+            'name': test.name,
+            'message': test.failure.message
+          }).value();
+        }).value();
+        attachments = (0, _lodash2.default)([{
+          'name': zipName,
+          'content_type': _constants2.default.HEADER.ZIP,
+          'data': attachment.buildZip(failures)
+        }]).value();
+      }
+      attachments.length > 0 && (testLog['attachments'] = attachments);
+
       testLog['test_step_logs'] = (0, _lodash2.default)(tests).map(function (test) {
         return (0, _lodash2.default)({
           'description': test.name,

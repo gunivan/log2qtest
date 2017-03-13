@@ -9,6 +9,7 @@ import { App } from './app';
 
 program.version(pkg.version)
   .description(pkg.description)
+  .option('-c, --config', 'Generate sample config file.')
   .option('-p, --parse <dir>', 'Parse Junit xml files')
   .option('-s, --submit', 'Submit logs to qTest')
   .option('-H, --host <host>', 'qTest site url')
@@ -28,16 +29,16 @@ program.version(pkg.version)
   })
   .parse(process.argv);
 
-// if (!program.args.length) {
-// program.help();
-// }
-
 let app = new App();
-let config = app.loadConfig(program);
-let parser = new Parser();
+if (program.config) {
+  app.createConfig();
+} else {
+  let config = app.loadConfig(program);
+  let parser = new Parser();
 
-if (program.submit) {
-  app.parseThenSubmit(config, parser);
-} else if (fs.existsSync(program.parse)) {
-  parser.parse(config)
+  if (program.submit) {
+    app.parseThenSubmit(config, parser);
+  } else if (fs.existsSync(program.parse)) {
+    parser.parse(config)
+  }
 }

@@ -9,13 +9,23 @@ import { Submitter } from './qtest';
  * Main function for application
  */
 export class App {
+  createConfig() {
+    try {
+      let defaultConfig = require(path.resolve('default.config.json'));
+      let sampleConfigFile = path.resolve(process.cwd(), 'config.json');
+      fs.writeFileSync(sampleConfigFile, JSON.stringify(defaultConfig, null, 2));
+      console.log(chalk.cyan('Created config.json at current directory.'));
+    } catch (e) {
+      console.log(chalk.yellow('Cannot create file config.json at current directory', e));
+    }
+  }
   loadConfig(program) {
     let config = {};
     try {
-      config = require(path.resolve('config.json'));
-      console.log('Found config.json at current directory.');
+      config = require(path.resolve(process.cwd(), 'config.json'));
+      console.log(chalk.cyan('Found config.json at current directory.'));
     } catch (e) {
-      console.log('Not found config.json at current directory, use default console params.');
+      console.log(chalk.yellow('Not found config.json at current directory, use default console params.', e));
       config = {};
     }
     config = Object.assign(config, {
@@ -26,7 +36,7 @@ export class App {
       project: program.project || config.project,
       suite: program.suite || config.suite,
       module: program.module || config.module,
-      dir: program.parse || config.dir,
+      dir: program.parse || config.file,
       methodAsTestCase: program.methodAsTestCase || config.methodAsTestCase,
       exeDate: program.exeDate || config.exe_date,
       startDate: new Date().toISOString()
@@ -53,7 +63,7 @@ export class App {
         config.token = token;
         console.log('Token:', token);
         submitter.submit(config, data).then(res => {
-          console.log(chalk.blue('Submit success', res));
+          console.log('Submit success', res);
           bar.tick();
           submitter.waitTaskDone(config, res.id, res.status);
         }).catch(e => {

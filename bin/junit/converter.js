@@ -9,6 +9,14 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _unescape = require('unescape');
+
+var _unescape2 = _interopRequireDefault(_unescape);
+
+var _constants = require('../constants');
+
+var _constants2 = _interopRequireDefault(_constants);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function time(raw) {
@@ -27,7 +35,7 @@ function summary(raw) {
 function failure(raw, sysErr, sysOut) {
   return {
     'type': raw.$.type,
-    'message': raw.$.message,
+    'message': (0, _unescape2.default)(raw.$.message),
     'raw': raw._,
     'error': sysErr,
     'out': sysOut
@@ -45,9 +53,9 @@ function tests(raw) {
       'name': test.$.name,
       'time': time(test.$.time),
       'failure': failure(current, sysErr, sysOut),
-      'status': 'pass'
+      'status': _constants2.default.STATUS.FAIL
     }).tap(function (result) {
-      !test.failure && delete result.failure && (result.status = 'fail');
+      !test.failure && delete result.failure && (result.status = _constants2.default.STATUS.PASS);
     }).value();
   }).value();
 }

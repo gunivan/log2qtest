@@ -1,0 +1,15 @@
+{
+  "host": "",
+  "username": "",
+  "password": "",
+  "project": 1,
+  "suite": 1,
+  "module": 1,
+  "file": "abc.xml",
+  "methodAsTestCase": false,
+  "status": {
+    "pass": "PASSED",
+    "fail": "FAILED"
+  },
+  "exe_date": null
+}
