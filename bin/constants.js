@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = {
   TMP_DIR: '.tmp',
   OUT_FILE: '.tmp/out.json',
+  PATTERN_JUNIT: 'TEST-*.xml',
   STATUS: {
     PASS: 'pass',
     FAIL: 'fail'
@@ -20,5 +21,6 @@ exports.default = {
     TEXT: 'text/plain'
   },
   TASK_SUCCESS: 'SUCCESS',
-  OAUTH_GRANT_TYPE: 'password'
+  OAUTH_GRANT_TYPE: 'password',
+  MAX_RETRY_GET_TASK: 7200 //2 hours
 };

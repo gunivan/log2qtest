@@ -23,9 +23,19 @@ var _progress = require('progress');
 
 var _progress2 = _interopRequireDefault(_progress);
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _junit = require('./junit');
 
 var _qtest = require('./qtest');
+
+var _constants = require('./constants');
+
+var _constants2 = _interopRequireDefault(_constants);
+
+var _stopWatch = require('./stopWatch');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -66,11 +76,11 @@ var App = exports.App = function () {
         host: program.host || config.host,
         username: program.username || config.username,
         password: program.password || config.password,
-        token: program.token || config.token,
         project: program.project || config.project,
         suite: program.suite || config.suite,
         module: program.module || config.module,
-        dir: program.file || config.file,
+        dir: program.dir || config.dir,
+        pattern: program.pattern || config.pattern,
         methodAsTestCase: program.methodAsTestCase || config.methodAsTestCase,
         exeDate: program.exeDate || config.exe_date,
         startDate: new Date().toISOString()
@@ -79,19 +89,42 @@ var App = exports.App = function () {
       return config;
     }
   }, {
+    key: 'printConfig',
+    value: function printConfig(config) {
+      config.host && console.log(_chalk2.default.green('qTest url: ' + config.host));
+      config.project && console.log(_chalk2.default.green('Project: ' + config.project));
+      config.suite && console.log(_chalk2.default.green('Test suite: ' + config.suite));
+      config.module && console.log(_chalk2.default.green('Parent module: ' + config.module));
+      console.log(_chalk2.default.green('Result dir: ' + (config.dir || './')));
+      console.log(_chalk2.default.green('Pattern: ' + (config.pattern || _constants2.default.PATTERN_JUNIT)));
+      console.log(_chalk2.default.green('Method as Test Case: ' + (config.methodAsTestCase || false)));
+      console.log(_chalk2.default.green('Execution date: ' + (config.exeDate || '')));
+    }
+  }, {
+    key: 'parse',
+    value: function parse(config) {
+      var parser = new _junit.Parser();
+      return parser.parse(config);
+    }
+  }, {
     key: 'parseThenSubmit',
-    value: function parseThenSubmit(config, parser) {
+    value: function parseThenSubmit(config) {
+      var parser = new _junit.Parser();
       var bar = new _progress2.default('Parse and submit to qTest [:bar] :percent :etas \n', {
         complete: '=',
         incomplete: ' ',
         width: 20,
         total: 2
       });
-
-      parser.parse(config).then(function (data) {
-        console.log(_chalk2.default.blue('  Done parse JUnit xml file.'));
+      var stopwatch = new _stopWatch.Stopwatch();
+      parser.parse(config).then(function (suites) {
+        console.log(_chalk2.default.blue('Done parse JUnit xml file in ' + stopwatch.eslaped()));
         //set end time
-        config.endDate = new Date(new Date(config.startDate).getTime() + data.suite.time * 1000).toISOString();
+        var totalTime = 0;
+        (0, _lodash2.default)(suites).map(function (suite) {
+          totalTime += suite.time * 1000;
+        });
+        config.endDate = new Date(new Date(config.startDate).getTime() + totalTime).toISOString();
         bar.tick();
 
         var submitter = new _qtest.Submitter();
@@ -99,12 +132,18 @@ var App = exports.App = function () {
         submitter.login(config).then(function (token) {
           config.token = token;
           console.log('Token:', token);
-          submitter.submit(config, data).then(function (res) {
-            console.log('Submit success', res);
+          stopwatch.reset();
+          submitter.submit(config, suites).then(function (res) {
             bar.tick();
-            submitter.waitTaskDone(config, res.id, res.status);
+            console.log(_chalk2.default.blue('Done submit in ' + stopwatch.eslaped()));
+            if (res.id) {
+              console.log('Submit success', res);
+              submitter.waitTaskDone(config, res.id, res.status);
+            } else {
+              console.error(_chalk2.default.red('Submit fail:', res.message));
+            }
           }).catch(function (e) {
-            console.error(_chalk2.default.red('Error while submit', e));
+            console.error(_chalk2.default.red('Error while submit:', e));
             bar.tick();
           });
         });

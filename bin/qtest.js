@@ -23,6 +23,8 @@ var _chalk2 = _interopRequireDefault(_chalk);
 
 var _attachment = require('./attachment');
 
+var _stopWatch = require('./stopWatch');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -114,12 +116,12 @@ var Submitter = exports.Submitter = function () {
       var _this2 = this;
 
       var state = status;
-      var maxRetry = 500;
       var count = 1;
+      var stopwatch = new _stopWatch.Stopwatch();
       var itvId = setInterval(function () {
-        if (count >= maxRetry) {
+        if (count >= _constants2.default.MAX_RETRY_GET_TASK) {
           clearInterval(itvId);
-          console.log(_chalk2.default.yellow('Stop get task due tu reach max retry to get task status'));
+          console.log(_chalk2.default.yellow('Stop get task due to reach max retry to get task status'));
         }
         _this2.getTask(config, id).then(function (res) {
           state !== res.state && console.log(_chalk2.default.cyan('Status: ', res.state));
@@ -127,9 +129,10 @@ var Submitter = exports.Submitter = function () {
             clearInterval(itvId);
             var content = _constants2.default.HEADER.JSON === res.contentType ? JSON.parse(res.content) : {};
             console.log(_chalk2.default.blue('Test suite link: ' + config.host + '/p/' + config.project + '/portal/project#tab=testexecution&object=2&id=' + content.testSuiteId));
-            console.log(_chalk2.default.cyan('  Total testcases: ' + (content.totalTestCases || 0)));
+            console.log(_chalk2.default.cyan('  Total test cases: ' + (content.totalTestCases || 0)));
             console.log(_chalk2.default.cyan('  Total test runs were created: ' + (content.totalTestRuns || 0)));
             console.log(_chalk2.default.cyan('  Total test logs were created: ' + (content.totalTestLogs || 0)));
+            console.log(_chalk2.default.blue('  Done get submit task in ' + stopwatch.eslaped()));
           }
           state = res.state;
           count++;
@@ -148,11 +151,18 @@ var Submitter = exports.Submitter = function () {
   }, {
     key: 'submit',
     value: function submit(config, suites) {
-      console.log('Suite summary', suites.suite.summary);
+      var _this3 = this;
+
       var url = config.host + '/api/v3.1/projects/' + config.project + '/test-runs/0/auto-test-logs?type=automation';
-      var testLogs = this.buildTestLogs(config, suites.suite);
-      console.log(_chalk2.default.cyan('Test logs ' + testLogs.length));
-      console.log(_chalk2.default.cyan('Submit to qTest...'));
+      var testLogs = (0, _lodash2.default)(suites).map(function (suite) {
+        var logs = _this3.buildTestLogs(config, suite);
+        console.log(_chalk2.default.cyan('Suite summary ' + JSON.stringify(suite.summary) + ', logs ' + logs.length));
+        return logs;
+      }).flatten(function (a, b) {
+        return a.concat(b);
+      }).value();
+
+      console.log(_chalk2.default.cyan('Submit to qTest with testLogs ' + testLogs.length + '...'));
       var submitData = {
         'test_logs': testLogs
       };
@@ -191,7 +201,6 @@ var Submitter = exports.Submitter = function () {
   }, {
     key: 'buildTestLogs',
     value: function buildTestLogs(config, suite) {
-      console.log(_chalk2.default.cyan('Method as testcase: ' + config.methodAsTestCase));
       var _this = this;
       if (config.methodAsTestCase) {
         return (0, _lodash2.default)(suite.tests).map(function (test) {

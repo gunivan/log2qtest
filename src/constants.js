@@ -4,6 +4,7 @@
 export default {
   TMP_DIR: '.tmp',
   OUT_FILE: '.tmp/out.json',
+  PATTERN_JUNIT: 'TEST-*.xml',
   STATUS: {
     PASS: 'pass',
     FAIL: 'fail'
@@ -15,5 +16,6 @@ export default {
     TEXT: 'text/plain'
   },
   TASK_SUCCESS: 'SUCCESS',
-  OAUTH_GRANT_TYPE: 'password'
+  OAUTH_GRANT_TYPE: 'password',
+  MAX_RETRY_GET_TASK: 7200 //2 hours
 }

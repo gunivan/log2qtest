@@ -1,6 +1,6 @@
 {
   "name": "log2qtest",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Submit automation logs (JUnit) to qTest qtestnet.com",
   "main": "index.js",
   "scripts": {
@@ -29,6 +29,7 @@
   "dependencies": {
     "chalk": "^1.1.1",
     "commander": "^2.9.0",
+    "glob": "^7.1.1",
     "lodash": "^4.17.4",
     "node-native-zip": "^1.1.0",
     "node-rest-client": "^3.0.3",

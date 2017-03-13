@@ -5,7 +5,8 @@
   "project": 1,
   "suite": 1,
   "module": 1,
-  "file": "abc.xml",
+  "dir": "abc.xml",
+  "pattern": "*.xml",
   "methodAsTestCase": false,
   "status": {
     "pass": "PASSED",

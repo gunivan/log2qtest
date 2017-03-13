@@ -15,6 +15,18 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
+var _glob = require('glob');
+
+var _glob2 = _interopRequireDefault(_glob);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _constants = require('../constants');
 
 var _constants2 = _interopRequireDefault(_constants);
@@ -42,7 +54,6 @@ var Parser = exports.Parser = function () {
      */
     value: function parseFromXml(xml) {
       return new Promise(function (resolve, reject) {
-        console.log('Parse xml string to objects');
         _xml2js2.default.parseString(xml, function (error, raw) {
           if (error) {
             throw new Error(error);
@@ -58,64 +69,88 @@ var Parser = exports.Parser = function () {
      */
 
   }, {
-    key: 'parseFromFile',
-    value: function parseFromFile(file) {
-      var xml = _fs2.default.readFileSync(file).toString();
-      console.log('Read text from file [' + file + '], has text: ' + (xml != null));
-      return this.parseFromXml(xml).then(function (res) {
-        console.log('Save objects to file [' + _constants2.default.OUT_FILE + ']');
+    key: 'parseFromFiles',
+    value: function parseFromFiles(files) {
+      var _this = this;
+
+      var funcParseFiles = (0, _lodash2.default)(files).map(function (file) {
+        var xml = _fs2.default.readFileSync(file).toString();
+        console.log('Read text from file [' + file + '], has text: ' + (xml != null) + '...');
+        return _this.parseFromXml(xml);
+      }).value();
+      return Promise.all(funcParseFiles).then(function (results) {
+        console.log('Save objects to file [' + _constants2.default.OUT_FILE + ']...');
         if (!_fs2.default.existsSync(_constants2.default.TMP_DIR)) {
           _fs2.default.mkdirSync(_constants2.default.TMP_DIR);
         }
-        _fs2.default.writeFile(_constants2.default.OUT_FILE, JSON.stringify(res), function (status) {
-          console.log('Done save to file [' + _constants2.default.OUT_FILE + ']');
-        });
-        return res;
+        _fs2.default.writeFileSync(_constants2.default.OUT_FILE, JSON.stringify(results));
+        return results;
       }).catch(function (e) {
-        throw e;
+        throw new Error(e);
       });
     }
+  }, {
+    key: 'listFiles',
+    value: function listFiles(config) {
+      var pattern = '' + (config.pattern || _constants2.default.PATTERN_JUNIT);
+      var options = {
+        'root': _path2.default.resolve('./')
+      };
+      if (_fs2.default.existsSync(config.dir)) {
+        options.root = _path2.default.resolve(config.dir);
+      }
+      console.log('List JUnit file with pattern: ' + pattern + ' under folder: ' + options.root);
 
+      return new Promise(function (resolve, reject) {
+        (0, _glob2.default)(pattern, options, function (error, files) {
+          if (error) {
+            throw new Error('Error while list file with pattern ' + pattern + ', error ' + error);
+          }
+          resolve(files);
+        });
+      });
+    }
     /**
      * Return object structure
      {
-      suite: {
-        name: '',
-        time: '',
-        summary: {
-          tests: ''
-          failures: ,
-          skipped: ,
-          errors: {}
+        name : '',
+        time : '',
+        summary : {
+          tests : ''
+          failures : ,
+          skipped : ,
+          errors : {}
         },
-        tests: [{
-          name: '',
-          time: '',
-          failure: {
-            type: '',
-            message: '',
-            raw: '',
-            error: '',
-            out: ''}
-        }],
-        extras: {
-          output: '',
-          errors: ''
+        tests : [{
+            name : '',
+            time : '',
+            failure : {
+              type : '',
+              message : '',
+              raw : '',
+              error : '',
+              out : ''
+            }
+          }
+        ],
+        extras : {
+          output : '',
+          errors : ''
         }
       }
-    }
      * @param {*} config
      */
 
   }, {
     key: 'parse',
     value: function parse(config) {
-      var file = config.dir;
+      var _this2 = this;
+
       var force = config.force || true;
-      //!fs.existsSync(Constants.OUT_FILE)
       if (force) {
-        console.log('Parse from ' + file + ' then persists.');
-        return this.parseFromFile(file);
+        return this.listFiles(config).then(function (files) {
+          return _this2.parseFromFiles(files);
+        });
       } else {
         console.log('Load from saved file.');
         return new Promise(function (resolve, reject) {

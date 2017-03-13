@@ -42,14 +42,14 @@ function failure(raw, sysErr, sysOut) {
   };
 }
 
-function tests(raw) {
-  return (0, _lodash2.default)(raw).map(function (test) {
+function tests(rawSuite) {
+  return (0, _lodash2.default)(rawSuite.testcase).map(function (test) {
     var current = (test.failure || [])[0] || { $: {}, _: '' };
     var sysErr = (test['system-err'] || [])[0] || '';
     var sysOut = (test['system-out'] || [])[0] || '';
 
     return (0, _lodash2.default)({
-      'classname': test.$.classname,
+      'classname': test.$.classname || rawSuite.$.package,
       'name': test.$.name,
       'time': time(test.$.time),
       'failure': failure(current, sysErr, sysOut),
@@ -70,15 +70,15 @@ function extras(raw) {
 }
 
 function from(raw) {
-  var rawSuite = raw.testsuite || { $: {} };
+  var rawSuite = raw.testsuites ? raw.testsuites.testsuite[0] : raw.testsuite || { $: {} };
 
   var parsed = {
     'name': rawSuite.$.name,
     'time': time(rawSuite.$.time),
     'summary': summary(rawSuite.$),
-    'tests': tests(rawSuite.testcase),
+    'tests': tests(rawSuite),
     'extras': extras(rawSuite)
   };
 
-  return { 'suite': parsed };
+  return parsed;
 }

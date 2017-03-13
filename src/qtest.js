@@ -4,6 +4,7 @@ import Constants from './constants';
 import _ from 'lodash';
 import chalk from 'chalk';
 import { Attachment } from './attachment';
+import { Stopwatch } from './stopWatch';
 
 const client = new Client();
 const attachment = new Attachment();
@@ -73,12 +74,12 @@ export class Submitter {
    */
   waitTaskDone(config, id, status) {
     let state = status;
-    let maxRetry = 500;
     let count = 1;
+    let stopwatch = new Stopwatch();
     let itvId = setInterval(() => {
-      if (count >= maxRetry) {
+      if (count >= Constants.MAX_RETRY_GET_TASK) {
         clearInterval(itvId);
-        console.log(chalk.yellow('Stop get task due tu reach max retry to get task status'));
+        console.log(chalk.yellow('Stop get task due to reach max retry to get task status'));
       }
       this.getTask(config, id).then(res => {
         state !== res.state && console.log(chalk.cyan('Status: ', res.state));
@@ -86,9 +87,10 @@ export class Submitter {
           clearInterval(itvId);
           let content = Constants.HEADER.JSON === res.contentType ? JSON.parse(res.content) : {};
           console.log(chalk.blue(`Test suite link: ${config.host}/p/${config.project}/portal/project#tab=testexecution&object=2&id=${content.testSuiteId}`));
-          console.log(chalk.cyan(`  Total testcases: ${content.totalTestCases || 0}`));
+          console.log(chalk.cyan(`  Total test cases: ${content.totalTestCases || 0}`));
           console.log(chalk.cyan(`  Total test runs were created: ${content.totalTestRuns || 0}`));
           console.log(chalk.cyan(`  Total test logs were created: ${content.totalTestLogs || 0}`));
+          console.log(chalk.blue(`  Done get submit task in ${stopwatch.eslaped()}`));
         }
         state = res.state
         count++;
@@ -104,11 +106,16 @@ export class Submitter {
    * @param {*} data @see parser.parse
    */
   submit(config, suites) {
-    console.log('Suite summary', suites.suite.summary);
     let url = `${config.host}/api/v3.1/projects/${config.project}/test-runs/0/auto-test-logs?type=automation`;
-    let testLogs = this.buildTestLogs(config, suites.suite);
-    console.log(chalk.cyan(`Test logs ${testLogs.length}`));
-    console.log(chalk.cyan('Submit to qTest...'));
+    let testLogs = _(suites).map(suite => {
+      let logs = this.buildTestLogs(config, suite);
+      console.log(chalk.cyan(`Suite summary ${JSON.stringify(suite.summary)}, logs ${logs.length}`));
+      return logs;
+    }).flatten((a, b) => {
+      return a.concat(b);
+    }).value();
+
+    console.log(chalk.cyan(`Submit to qTest with testLogs ${testLogs.length}...`));
     let submitData = {
       'test_logs': testLogs
     };
@@ -144,7 +151,6 @@ export class Submitter {
    * @param {*} suite 
    */
   buildTestLogs(config, suite) {
-    console.log(chalk.cyan(`Method as testcase: ${config.methodAsTestCase}`));
     let _this = this;
     if (config.methodAsTestCase) {
       return _(suite.tests)
