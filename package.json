@@ -1,11 +1,12 @@
 {
   "name": "log2qtest",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Submit automation logs (JUnit) to qTest qtestnet.com",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf bin && babel -d bin ./src",
+    "prepublish": "npm run build",
     "watch": "rm -rf bin && babel -w --out-dir bin ./src"
   },
   "bin": {
