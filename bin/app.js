@@ -82,10 +82,9 @@ var App = exports.App = function () {
         dir: program.dir || config.dir,
         pattern: program.pattern || config.pattern,
         methodAsTestCase: program.methodAsTestCase || config.methodAsTestCase,
-        exeDate: program.exeDate || config.exe_date,
+        exeDate: program.exeDate || config.exeDate,
         startDate: new Date().toISOString()
       });
-      delete config.exe_date;
       return config;
     }
   }, {
