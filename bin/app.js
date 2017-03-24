@@ -79,11 +79,13 @@ var App = exports.App = function () {
         project: program.project || config.project,
         suite: program.suite || config.suite,
         module: program.module || config.module,
+        cycle: program.cycle || config.cycle,
         dir: program.dir || config.dir,
         pattern: program.pattern || config.pattern,
         methodAsTestCase: program.methodAsTestCase || config.methodAsTestCase,
         exeDate: program.exeDate || config.exeDate,
-        startDate: new Date().toISOString()
+        startDate: new Date().toISOString(),
+        modules: program.modules || config.modules
       });
       return config;
     }
@@ -107,7 +109,7 @@ var App = exports.App = function () {
     }
   }, {
     key: 'parseThenSubmit',
-    value: function parseThenSubmit(config) {
+    value: function parseThenSubmit(config, submitWithNewApi) {
       var parser = new _junit.Parser();
       var bar = new _progress2.default('Parse and submit to qTest [:bar] :percent :etas \n', {
         complete: '=',
@@ -132,7 +134,15 @@ var App = exports.App = function () {
           config.token = token;
           console.log('Token:', token);
           stopwatch.reset();
-          submitter.submit(config, suites).then(function (res) {
+          var task = void 0;
+          if (submitWithNewApi) {
+            console.log(_chalk2.default.blue('Submitted to API v3 new'));
+            task = submitter.submitV3New(config, suites);
+          } else {
+            console.log(_chalk2.default.blue('Submitted to API v3.1'));
+            task = submitter.submit(config, suites);
+          }
+          task.then(function (res) {
             bar.tick();
             console.log(_chalk2.default.blue('Done submit in ' + stopwatch.eslaped()));
             if (res.id) {

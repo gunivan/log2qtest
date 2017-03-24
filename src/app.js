@@ -38,11 +38,13 @@ export class App {
       project: program.project || config.project,
       suite: program.suite || config.suite,
       module: program.module || config.module,
+      cycle: program.cycle || config.cycle,
       dir: program.dir || config.dir,
       pattern: program.pattern || config.pattern,
       methodAsTestCase: program.methodAsTestCase || config.methodAsTestCase,
       exeDate: program.exeDate || config.exeDate,
-      startDate: new Date().toISOString()
+      startDate: new Date().toISOString(),
+      modules: program.modules || config.modules
     });
     return config;
   }
@@ -60,7 +62,7 @@ export class App {
     let parser = new Parser();
     return parser.parse(config)
   }
-  parseThenSubmit(config) {
+  parseThenSubmit(config, submitWithNewApi) {
     let parser = new Parser();
     let bar = new ProgressBar('Parse and submit to qTest [:bar] :percent :etas \n', {
       complete: '=',
@@ -85,7 +87,15 @@ export class App {
         config.token = token;
         console.log('Token:', token);
         stopwatch.reset();
-        submitter.submit(config, suites).then(res => {
+        let task;
+        if (submitWithNewApi) {
+          console.log(chalk.blue(`Submitted to API v3 new`));
+          task = submitter.submitV3New(config, suites)
+        } else {
+          console.log(chalk.blue(`Submitted to API v3.1`));
+          task = submitter.submit(config, suites);
+        }
+        task.then(res => {
           bar.tick();
           console.log(chalk.blue(`Done submit in ${stopwatch.eslaped()}`));
           if (res.id) {

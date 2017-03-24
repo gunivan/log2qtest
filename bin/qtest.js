@@ -191,7 +191,50 @@ var Submitter = exports.Submitter = function () {
         });
       });
     }
+  }, {
+    key: 'submitV3New',
+    value: function submitV3New(config, suites) {
+      var _this4 = this;
 
+      var url = config.host + '/api/v3/projects/' + config.project + '/auto-test-logs?type=automation';
+      var testLogs = (0, _lodash2.default)(suites).map(function (suite) {
+        var logs = _this4.buildTestLogs(config, suite);
+        console.log(_chalk2.default.cyan('Suite summary ' + JSON.stringify(suite.summary) + ', logs ' + logs.length));
+        return logs;
+      }).flatten(function (a, b) {
+        return a.concat(b);
+      }).value();
+
+      console.log(_chalk2.default.cyan('Submit to qTest API v3 new with testLogs ' + testLogs.length + '...'));
+      var submitData = {
+        'test_logs': testLogs
+      };
+      config.module && (submitData['parent_module'] = config.module);
+      config.suite && (submitData['test_suite'] = config.suite);
+      config.exeDate && (submitData['execution_date'] = config.exeDate);
+      config.cycle && (submitData['test_cycle'] = config.cycle);
+      var args = {
+        data: submitData,
+        headers: {
+          'Authorization': 'Bearer ' + config.token,
+          'Content-Type': _constants2.default.HEADER.JSON
+        }
+      };
+      if (config.skipSubmit) {
+        return new Promise(function (resolve, reject) {
+          resolve({});
+        });
+      }
+      return new Promise(function (resolve, reject) {
+        client.post(url, args, function (data, response) {
+          if (data.error) {
+            console.error(_chalk2.default.red('Error while submit logs to qTest:', data));
+            throw new Error(error);
+          }
+          resolve(data);
+        });
+      });
+    }
     /**
      * Build testLogs from suite
      * @param {*} config 
@@ -202,6 +245,7 @@ var Submitter = exports.Submitter = function () {
     key: 'buildTestLogs',
     value: function buildTestLogs(config, suite) {
       var _this = this;
+      //each method as a testCase
       if (config.methodAsTestCase) {
         return (0, _lodash2.default)(suite.tests).map(function (test) {
           return (0, _lodash2.default)(_this.buildTestLog(config, [test], test.name)).tap(function (testLog) {
@@ -209,6 +253,7 @@ var Submitter = exports.Submitter = function () {
           }).value();
         }).value();
       } else {
+        //each method as a teststep
         return (0, _lodash2.default)(suite.tests).groupBy('classname').map(function (tests, classname) {
           var fail = false;
           _lodash2.default.each(tests, function (test) {
@@ -236,7 +281,8 @@ var Submitter = exports.Submitter = function () {
         'name': classname,
         'automation_content': classname,
         'exe_start_date': config.startDate,
-        'exe_end_date': config.endDate
+        'exe_end_date': config.endDate,
+        "module_names": config.modules || classname.split(".")
       };
       var failures = (0, _lodash2.default)(tests).filter(function (test) {
         return test.status === _constants2.default.STATUS.FAIL;
@@ -272,7 +318,7 @@ var Submitter = exports.Submitter = function () {
           'description': test.name,
           'expected_result': test.name,
           'actual_result': test.name,
-          'status': test.status
+          'status': config.status[test.status]
         }).value();
       }).value();
       return (0, _lodash2.default)(testLog).value();

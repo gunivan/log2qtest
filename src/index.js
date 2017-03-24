@@ -3,6 +3,7 @@
 import program from 'commander';
 import ProgressBar from 'progress';
 import fs from 'fs';
+import chalk from 'chalk';
 import pkg from '../package.json';
 import { App } from './app';
 
@@ -11,6 +12,7 @@ program.version(pkg.version)
   .option('-C, --config', 'Generate sample config file.')
   .option('-c, --convert', 'Parse Junit xml files')
   .option('-s, --submit', 'Submit logs to qTest')
+  .option('-n, --apinew', 'Submit logs to qTest with API new')
   .option('-d, --dir <dir>', 'Directory that contains JUnit xml file')
   .option('-p, --pattern <pattern>', 'File pattern to filter JUnit xml')
   .option('-H, --host <host>', 'qTest site url')
@@ -25,8 +27,10 @@ program.version(pkg.version)
     console.log('Examples:');
     console.log('  -Parse junit xml file in config file:');
     console.log('     log2qtest -c');
-    console.log('  -Parse and submit logs to qTest:');
+    console.log('  -Parse and submit logs to qTest with API v3.1:');
     console.log('     log2qtest -c -s');
+    console.log('  -Parse and submit logs to qTest with API new:');
+    console.log('     log2qtest -c -s -n');
   })
   .parse(process.argv);
 
@@ -38,7 +42,11 @@ if (program.config) {
 
   if (program.submit) {
     app.printConfig(config);
-    app.parseThenSubmit(config);
+    try {
+      app.parseThenSubmit(config, program.apinew);
+    } catch (e) {
+      console.error(chalk.red('Error while submit', e));
+    }
   } else if (program.convert) {
     app.parse(config);
   } else {

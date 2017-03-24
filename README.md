@@ -29,3 +29,4 @@ This is CLI app that allow parse JUnit xml file then submit to qTest via rest AP
 - -d "\<dir\>": to parse xml files in dir
 - -r: to filter file by pattern: *.xml or TEST-*.xml 
 - -M: each method as test case
+- -n: submit with new API 

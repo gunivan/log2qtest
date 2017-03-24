@@ -145,6 +145,46 @@ export class Submitter {
     });
   }
 
+  submitV3New(config, suites) {
+    let url = `${config.host}/api/v3/projects/${config.project}/auto-test-logs?type=automation`;
+    let testLogs = _(suites).map(suite => {
+      let logs = this.buildTestLogs(config, suite);
+      console.log(chalk.cyan(`Suite summary ${JSON.stringify(suite.summary)}, logs ${logs.length}`));
+      return logs;
+    }).flatten((a, b) => {
+      return a.concat(b);
+    }).value();
+
+    console.log(chalk.cyan(`Submit to qTest API v3 new with testLogs ${testLogs.length}...`));
+    let submitData = {
+      'test_logs': testLogs
+    };
+    config.module && (submitData['parent_module'] = config.module);
+    config.suite && (submitData['test_suite'] = config.suite);
+    config.exeDate && (submitData['execution_date'] = config.exeDate);
+    config.cycle && (submitData['test_cycle'] = config.cycle);
+    let args = {
+      data: submitData,
+      headers: {
+        'Authorization': `Bearer ${config.token}`,
+        'Content-Type': Constants.HEADER.JSON
+      }
+    };
+    if (config.skipSubmit) {
+      return new Promise((resolve, reject) => {
+        resolve({});
+      });
+    }
+    return new Promise((resolve, reject) => {
+      client.post(url, args, (data, response) => {
+        if (data.error) {
+          console.error(chalk.red('Error while submit logs to qTest:', data));
+          throw new Error(error);
+        }
+        resolve(data);
+      });
+    });
+  }
   /**
    * Build testLogs from suite
    * @param {*} config 
@@ -152,6 +192,7 @@ export class Submitter {
    */
   buildTestLogs(config, suite) {
     let _this = this;
+    //each method as a testCase
     if (config.methodAsTestCase) {
       return _(suite.tests)
         .map((test) => {
@@ -160,6 +201,7 @@ export class Submitter {
             .value();
         }).value();
     } else {
+      //each method as a teststep
       return _(suite.tests)
         .groupBy('classname')
         .map((tests, classname) => {
@@ -183,11 +225,13 @@ export class Submitter {
    * @param {*} classname 
    */
   buildTestLog(config, tests, classname) {
+    let modules = (config.modules && config.modules.length) ? config.modules || classname.split(".");
     let testLog = {
       'name': classname,
       'automation_content': classname,
       'exe_start_date': config.startDate,
-      'exe_end_date': config.endDate
+      'exe_end_date': config.endDate,
+      "module_names": modules
     };
     let failures = _(tests)
       .filter(test => test.status === Constants.STATUS.FAIL)
@@ -225,10 +269,9 @@ export class Submitter {
           'description': test.name,
           'expected_result': test.name,
           'actual_result': test.name,
-          'status': test.status
+          'status': config.status[test.status]
         }).value();
       }).value();
     return _(testLog).value();
   }
-
 }
