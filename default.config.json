@@ -5,6 +5,7 @@
   "project": 1,
   "suite": 1,
   "module": 1,
+  "cycle": 1,
   "dir": "abc.xml",
   "pattern": "*.xml",
   "methodAsTestCase": false,
@@ -12,5 +13,6 @@
     "pass": "PASSED",
     "fail": "FAILED"
   },
-  "exeDate": null
+  "exeDate": null,
+   "modules": []
 }
