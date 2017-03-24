@@ -277,12 +277,13 @@ var Submitter = exports.Submitter = function () {
   }, {
     key: 'buildTestLog',
     value: function buildTestLog(config, tests, classname) {
+      var modules = config.modules && config.modules.length ? config.modules : classname.split(".");
       var testLog = {
         'name': classname,
         'automation_content': classname,
         'exe_start_date': config.startDate,
         'exe_end_date': config.endDate,
-        "module_names": config.modules || classname.split(".")
+        "module_names": modules
       };
       var failures = (0, _lodash2.default)(tests).filter(function (test) {
         return test.status === _constants2.default.STATUS.FAIL;

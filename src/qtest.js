@@ -225,7 +225,7 @@ export class Submitter {
    * @param {*} classname 
    */
   buildTestLog(config, tests, classname) {
-    let modules = (config.modules && config.modules.length) ? config.modules || classname.split(".");
+    let modules = (config.modules && config.modules.length) ? config.modules : classname.split(".");
     let testLog = {
       'name': classname,
       'automation_content': classname,
