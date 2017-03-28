@@ -53,7 +53,7 @@ var App = exports.App = function () {
     key: 'createConfig',
     value: function createConfig() {
       try {
-        var defaultConfig = require(_path2.default.resolve(__dirname, './default.config.json'));
+        var defaultConfig = require(_path2.default.resolve(__dirname, '../default.config.json'));
         var sampleConfigFile = _path2.default.resolve(process.cwd(), 'config.json');
         _fs2.default.writeFileSync(sampleConfigFile, JSON.stringify(defaultConfig, null, 2));
         console.log(_chalk2.default.cyan('Created config.json at current directory.'));

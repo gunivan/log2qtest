@@ -14,7 +14,7 @@ import { Stopwatch } from './stopWatch';
 export class App {
   createConfig() {
     try {
-      let defaultConfig = require(path.resolve(__dirname, './default.config.json'));
+      let defaultConfig = require(path.resolve(__dirname, '../default.config.json'));
       let sampleConfigFile = path.resolve(process.cwd(), 'config.json');
       fs.writeFileSync(sampleConfigFile, JSON.stringify(defaultConfig, null, 2));
       console.log(chalk.cyan('Created config.json at current directory.'));

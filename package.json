@@ -1,6 +1,6 @@
 {
   "name": "log2qtest",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Submit automation logs (JUnit) to qTest qtestnet.com",
   "main": "index.js",
   "scripts": {
